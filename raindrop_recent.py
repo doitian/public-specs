@@ -46,6 +46,7 @@ def filter_recent_bookmarks(csv_file, days):
     cutoff_timestamp = now.timestamp() - (days * 24 * 60 * 60)
 
     bookmarks = []
+    skipped_count = 0
 
     with open(csv_file, "r", encoding="utf-8") as f:
         reader = csv.DictReader(f)
@@ -53,8 +54,18 @@ def filter_recent_bookmarks(csv_file, days):
             created_str = row.get("created", "")
             created_dt = parse_iso_datetime(created_str)
 
-            if created_dt and created_dt.timestamp() >= cutoff_timestamp:
+            if created_dt is None:
+                skipped_count += 1
+                continue
+
+            if created_dt.timestamp() >= cutoff_timestamp:
                 bookmarks.append(row)
+
+    if skipped_count > 0:
+        print(
+            f"Warning: Skipped {skipped_count} row(s) with invalid or missing creation dates.",
+            file=sys.stderr,
+        )
 
     return bookmarks
 
@@ -69,8 +80,14 @@ def main():
     except FileNotFoundError:
         print(f"Error: File '{args.csv_file}' not found.", file=sys.stderr)
         sys.exit(1)
-    except Exception as e:
-        print(f"Error: {e}", file=sys.stderr)
+    except PermissionError:
+        print(f"Error: Permission denied to read '{args.csv_file}'.", file=sys.stderr)
+        sys.exit(1)
+    except csv.Error as e:
+        print(f"Error: Failed to parse CSV file: {e}", file=sys.stderr)
+        sys.exit(1)
+    except UnicodeDecodeError as e:
+        print(f"Error: Failed to decode file (encoding issue): {e}", file=sys.stderr)
         sys.exit(1)
 
 
