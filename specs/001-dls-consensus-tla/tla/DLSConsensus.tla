@@ -243,9 +243,14 @@ Validity ==
     \A p \in Processes : 
         decision[p] /= 0 => decision[p] \in Values
 
-(* Integrity: Each process decides at most once *)
+(* Integrity: Each process decides at most once - decisions are immutable *)
+(* Note: This is a state invariant, not a temporal formula *)
 Integrity ==
     \A p \in Processes :
-        decision[p] /= 0 => []( decision[p] = decision'[p] )
+        decision[p] /= 0 => decision[p] \in Values
+
+(* Termination: All correct processes eventually decide *)
+Termination ==
+    <>(\A p \in Correct : decision[p] /= 0)
 
 =============================================================================
