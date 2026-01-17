@@ -1,0 +1,32 @@
+# TLA+ Toolbox
+.toolbox/
+states/
+*.pdf_tex
+*.dot
+
+# TLC temporary files
+*.st
+*.fp
+*.chkpt
+
+# Logs
+*.log
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary files
+*.tmp
+*.bak
+.env
+.env.*
